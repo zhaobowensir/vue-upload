@@ -7,7 +7,10 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, './dist'),
     publicPath: '/dist/',
-    filename: 'build.js'
+    filename: 'vue-upload-images.js',
+    library: 'vue-upload-images',
+    libraryTarget: 'umd',
+    umdNamedDefine: true
   },
   module: {
     rules: [
