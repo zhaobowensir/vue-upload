@@ -20,7 +20,9 @@
     components: { vueUpload },
     methods: {
     	getFiles(data) {
-    		console.log(data.get('images'))
+    		for (var key of data.keys()) {
+			   console.log(key); 
+			}
     	}
     }
   }

@@ -2,7 +2,7 @@
 	<div class="upload">
 		<ul class="ulList">
 			<li class="imgList" :style="previewCss" v-for="item in imgArr">
-				<img :src="item.url">
+				<img :src="item">
 			</li>
 		</ul>
 		<input class="seletInput" @change="handleFiles" ref="file" type="file" accept="image/gif, image/jpeg, image/png" multiple="multiple">
@@ -44,14 +44,15 @@
 					parrent.appendChild(img)
 					reader.onload = function (e) {
 						img.src = e.target.result
-						_this.imgArr.push({url: e.target.result})
+						_this.imgArr.push(e.target.result)
+						_this.imgArr = [...new Set(_this.imgArr)]
 						if (img.complete) {
 							let data = _this.compress(img, file.type)
-							_this.upload(data, file.type)
+							_this.upload(data, file.type, file.name)
 						} else {
 							img.onload = function () {
 								let data = _this.compress(this)
-								_this.upload(data, file.type)
+								_this.upload(data, file.type, file.name)
 							}
 						}
 						parrent.removeChild(img)
@@ -103,7 +104,7 @@
 				canvas.width = canvas.height = 	tCanvas.width = tCanvas.height = 0
 				return data
 			},
-			upload(data, type) {
+			upload(data, type, name) {
 				let text = window.atob(data.split(',')[1]),
 					buffer = new Uint8Array(text.length)
 
@@ -111,7 +112,9 @@
 					buffer[i] = text.charCodeAt(i)
 				}
 				let blob = this.getBlob([buffer], type)
-				this.formData.append('images', blob)
+				if(!this.formData.has(name)) {
+					this.formData.append(name, blob)
+				}
 				this.getFiles(this.formData)
 			},
 			getBlob(buffer, type) {
